@@ -1,0 +1,6 @@
+1. install spring boot plugin in eclipse or use STS
+
+2. create spring starter project to get proper spring boot setup
+
+3. tomcat server starts @ port 8080
+
