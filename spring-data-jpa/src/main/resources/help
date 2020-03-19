@@ -1,0 +1,21 @@
+1. Reference : https://mkyong.com/spring/spring-propertysources-example/
+
+2. To parse resources file here ( database.properties) , you need to create below folder structure and that property file should be classpath
+  
+     you should be creating folder structure like "src/main/resources"
+     
+3. Tomcat used: 9.0.14
+
+4. test urls once the setup is done
+
+   - http://localhost:8080/spring-data-jpa/v1/antiquedata/all
+   - http://localhost:8080/spring-data-jpa/v1/antiquedata/hello
+   - http://localhost:8080/spring-data-jpa/v1/antiquedata/query/{feedId}
+   
+5. annotation based spring data jpa application
+
+6. Databse used: MySql
+
+7. Sample table( antique_raw_feed ) insert statement
+
+    INSERT INTO `dataentry`.`antique_raw_feed` (`feed_id`,`data`) VALUES('antique100','223333|asaasf|23414|xvsfb');
