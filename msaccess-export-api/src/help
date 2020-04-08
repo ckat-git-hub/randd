@@ -1,0 +1,8 @@
+- Need to create tables access db file
+
+- Setup access db file as full path from the drive like
+
+   D:\test\dataentry\product\workspace\msaccess-export-api\src\com\data\service\template
+  
+
+- Access by using URL "http://localhost:8080/msaccess-export-api/v1/exportdata/to/msaccess" as GET call
