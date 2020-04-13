@@ -1,0 +1,43 @@
+https://wiki.hybris.com/display/tr51/Development+Sandbox+-+Creating+a+code+base+for+your+project
+
+Refer above url or follow bellow steps
+
+1. In platform run command ant modulegen
+
+2. Give module name,package..etc
+
+3. Enter created store templates to localextensions.xml file
+
+4. update the system
+
+5. enter this entry in hosts file
+    127.0.0.1 apparel-uk.local apparel-de.local electronics.local powertools.local
+	
+6. then go to extension <store_name_given>storefront and check webmodule in file extensioninfo.xml
+
+     Example: Say your store name : DemoStore then you find webmodule like
+	 
+	   <webmodule jspcompile="false" webroot="/DemoStorestorefront"/>
+	    
+	   you have to use webroot
+
+6. These are B2C Accelerators 
+   then access site with http://apparel-uk.local:9001/DemoStorestorefront/ or 
+                         http://apparel-de.local:9001/DemoStorestorefront/ or 
+                         http://electronics.local:9001/DemoStorestorefront/
+						 
+7. For B2B Accelerators
+
+     http://apparel-uk.local:9001/b2bdemostorestorefront/ or 
+     http://apparel-de.local:9001/b2bdemostorestorefront/ or 
+     http://electronics.local:9001/b2bdemostorestorefront/
+	 http://powertools.local:9001/b2bdemostorestorefront/
+		
+	 anil.gupta@pronto-hw.com/hellohybris	 
+	 
+8.  
+    http://localhost:9001/yacceleratorstorefront?site=apparel-uk&clear=true
+    http://localhost:9001/yacceleratorstorefront?site=apparel-de&clear=true
+    http://localhost:9001/yacceleratorstorefront?site=electronics&clear=true
+    http://localhost:9001/yacceleratorstorefront?site=powertools&clear=true
+	 

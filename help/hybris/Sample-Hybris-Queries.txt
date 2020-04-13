@@ -1,0 +1,430 @@
+SELECT {valueSet:PK} 
+FROM {FeatureValueSet AS valueSet JOIN FeatureDescriptor AS featureDescriptor 
+     ON {valueSet:featureDescriptor} = {featureDescriptor:PK}} 
+WHERE ({valueSet:item} = 8796205907969 OR {valueSet:product} = 8796205907969 
+      OR {valueSet:category} = 8796205907969) AND {featureDescriptor:code} IN ('description', 'name') 
+      AND ({valueSet:fromDate} IS NULL OR {valueSet:fromDate} <= date(Tue Dec 31 00:00:00 IST 2013) ) 
+      AND ({valueSet:toDate} IS NULL OR {valueSet:toDate} >= date(Tue Dec 31 00:00:00 IST 2013)) AND {valueSet:brandType} = 8796110487643
+
+{featureCodes=[description, name], brandPk= 8796110487643, requestedDate=Tue Dec 31 00:00:00 IST 2013, itemPK= 8796205907969 }
+
+
+equivalent sql query
+
+SELECT  item_t0.PK  FROM featurevalueset item_t0 JOIN featuredescriptor item_t1 ON  item_t0.p_featuredescriptor  =  item_t1.PK  WHERE (( item_t0.p_item  = 8796205907969 OR  item_t0.p_product  = 8796205907969
+      OR  item_t0.p_category  = 8796205907969) AND  item_t1.p_code  IN ('description', 'name'))
+      AND item_t0.p_fromDate IS NULL OR item_t0.p_fromDate <= CURDATE()
+      AND item_t0.p_toDate IS NULL OR item_t0.p_toDate >= CURDATE()
+      AND item_t0.p_brandType = 8796110487643
+
+result 8806465462724 for above sql query
+
+
+--------------------------------------------------------------------------------------------------------
+
+SELECT {valueSet:PK} 
+FROM {FeatureValueSet AS valueSet JOIN FeatureDescriptor AS featureDescriptor 
+     ON {valueSet:featureDescriptor} = {featureDescriptor:PK}} 
+WHERE ({valueSet:item} = 8796205907969 
+      OR {valueSet:product} = 8796205907969) 
+      AND {featureDescriptor:code} IN ('description','name') 
+
+----------------------------------------------------------------------------------------------------------
+
+
+SELECT {valueSet:PK} FROM {FeatureValueSet AS valueSet JOIN FeatureDescriptor AS featureDescriptor ON {valueSet:featureDescriptor} = {featureDescriptor:PK}} WHERE ({valueSet:item} = ?itemPK OR {valueSet:product} = ?itemPK OR {valueSet:category} = ?itemPK) AND {featureDescriptor:code} IN (?featureCodes) AND ({valueSet:fromDate} IS NULL OR {valueSet:fromDate} <= ?requestedDate )AND ({valueSet:toDate} IS NULL OR {valueSet:toDate} >= ?requestedDate) AND {valueSet:brandType} = ?brandPk
+
+{featureCodes=[description, name], brandPk=8796110487643, requestedDate=Tue Dec 31 00:00:00 IST 2013, itemPK=8796205907969}
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+hybris flexible queries for learning syntax
+
+SELECT {accom:PK}
+FROM {Accommodation AS accom}
+-----------------------------------------------------------------------------------------------
+SELECT {accom:PK},{accom:metaDescription},{accom:metaTitle},{accom:reviewRating},{accom:type}
+FROM {Accommodation AS accom}
+-----------------------------------------------------------------------------------------------
+SELECT {accom:PK},{accom:metaDescription},{accom:metaTitle},{accom:reviewRating},{accom:type}
+FROM {Accommodation AS accom JOIN AccommodationType AS at ON {accom:type}={at:PK}}
+-----------------------------------------------------------------------------------------------
+SELECT {at:PK},{at:code}
+FROM {AccommodationType AS at}
+-----------------------------------------------------------------------------------------------
+SELECT {at:PK},{at:code}
+FROM {AccommodationType AS at}
+WHERE {at:code}='HOTEL'
+-----------------------------------------------------------------------------------------------
+SELECT {at:PK},{at:code}
+FROM {AccommodationType AS at}
+WHERE {at:code}='SHIP'
+-----------------------------------------------------------------------------------------------
+SELECT {accom:PK},{accom:reviewRating},{accom:type}
+FROM {Accommodation AS accom JOIN AccommodationType AS at ON {accom:type}={at:PK} AND {at:code}='SHIP'}
+-----------------------------------------------------------------------------------------------
+SELECT {accom:PK},{accom:reviewRating},{accom:type}
+FROM {Accommodation AS accom
+      JOIN AccommodationType AS at ON {accom:type}={at:PK}
+           AND {at:code}='SHIP'
+      LEFT JOIN FeatureValueSet AS fvs ON {fvs:item}={accom:PK}}
+-----------------------------------------------------------------------------------------------
+SELECT {accom:PK},{accom:reviewRating},{accom:type}
+FROM {Accommodation AS accom
+      JOIN AccommodationType AS at ON {accom:type}={at:PK}
+           AND {at:code}='SHIP'
+      LEFT JOIN FeatureValueSet AS fvs ON {fvs:item}={accom:PK}
+  LEFT JOIN FeatureDescriptor AS fd ON ({fd:PK}={fvs:featuredescriptor} AND {fd:code} IN ('NAME'))
+        }
+-----------------------------------------------------------------------------------------------
+SELECT {fd:code},{fd:name}
+FROM {FeatureDescriptor AS fd}
+WHERE {fd:code} IN ('name','usps','note','intro')
+-----------------------------------------------------------------------------------------------
+SELECT {accom:PK},{fd.code}FEATUREDESCRIPTOR_CODE,{fv.value}FEATURE_VALUE
+FROM {Accommodation AS accom
+      JOIN AccommodationType AS at ON {accom:type}={at:PK}
+           AND {at:code}='SHIP'
+      LEFT JOIN FeatureValueSet AS fvs ON {fvs:item}={accom:PK}
+      LEFT JOIN FeatureDescriptor AS fd ON ({fd:PK}=                   {fvs:featuredescriptor} AND {fd:code} IN ('name','usps','note','intro'))
+     LEFT JOIN FeatureValue AS fv ON {fv:featureValueSet} = {fvs:PK}
+}
+-----------------------------------------------------------------------------------------------
+SELECT {fd:code},{fd:name},{fv:value}
+FROM {Accommodation AS a JOIN FeatureValueSet AS fvs ON {fvs:item}={a:PK}
+  LEFT JOIN FeatureDescriptor AS fd ON ({fd:PK}={fvs:featuredescriptor} AND {fd:code} in ('name','usps','note','intro'))  
+  LEFT JOIN FeatureValue AS fv ON {fv:featureValueSet}={fvs:PK}
+}
+-----------------------------------------------------------------------------------------------
+SELECT {ci:PK}
+FROM {ContentItem AS ci}
+-----------------------------------------------------------------------------------------------
+SELECT {accom:code},{fd.code}FD_CODE,{fv.value}FEATURE_VALUE,{fvs:code}
+FROM {Accommodation AS accom
+      JOIN AccommodationType AS at ON {accom:type}={at:PK}
+           AND {at:code}='SHIP'
+      LEFT JOIN FeatureValueSet AS fvs ON {fvs:item}={accom:PK}
+      LEFT JOIN FeatureDescriptor AS fd ON ({fd:PK}=                   {fvs:featuredescriptor} AND {fd:code} IN ('latitude'))
+     LEFT JOIN FeatureValue AS fv ON {fv:featureValueSet} = {fvs:PK}
+     LEFT JOIN MediaContainer AS mc ON {mc:PK} = {accom:PK}
+     LEFT JOIN Media AS m ON {m:mediaContainer}={mc:PK}
+  LEFT JOIN MediaFormat AS mf ON {mf:PK}={m:mediaFormat} AND ({mf:name} IN ('small','medium'))
+}
+WHERE {accom:catalogVersion}
+
+
+SELECT {accom:code},{accom:PK}
+FROM {Accommodation AS accom},{AccommodationType AS at}
+WHERE {at:code} = 'SHIP'
+
+000006	8796093054977
+000007	8796093087745
+
+-----
+SELECT {fd:PK},{fd:code}
+FROM {FeatureDescriptor AS fd},{FeatureValue AS fv}
+WHERE {fd:PK} = '8796093054977' OR  {fd:PK} = '8796093087745'
+---------
+
+SELECT {fvs:PK},{fvs:code}
+FROM {FeatureValueSet AS fvs}
+
+in FeatureValueSet featureDescriptor qualifier is present
+
+8796093080004	a_000006_longitude_cr_fvs
+8796093112772	a_000006_latitude_cr_fvs
+8796093145540	a_000006_display_name_cr_fvs
+8796093178308	a_000006_synonyms_cr_fvs
+8796093211076	a_000006_hotel_chain_cr_fvs
+8796093243844	a_000006_official_rating_cr_fvs
+8796093276612	a_000006_no_of_buildings_cr_fvs
+8796093309380	a_000006_location_information_cr_fvs
+8796093342148	a_000006_no_of_floors_cr_fvs
+8796093374916	a_000006_no_of_lifts_cr_fvs
+-------------------
+
+SELECT {fd:PK},{fd:code}
+FROM {FeatureDescriptor AS fd}
+
+8796093080003	name
+8796093112771	description
+8796093145539	latitude
+8796093178307	longitude
+8796093211075	officialRating
+8796093243843	noOfBuildings
+8796093276611	noOfFloors
+8796093309379	noOfrooms
+8796093342147	noOfLifts
+8796093374915	tRating
+
+----------------
+SELECT {fv:PK},{fv:code}
+FROM {FeatureValue AS fv}
+
+8796093080005	a_000006_longitude_cr_fv
+8796093112773	a_000006_latitude_cr_fv
+8796093145541	a_000006_display_name_cr_fv
+8796093178309	a_000006_synonyms_cr_fv
+8796093211077	a_000006_hotel_chain_cr_fv
+8796093243845	a_000006_official_rating_cr_fv
+8796093276613	a_000006_no_of_buildings_cr_fv
+8796093309381	a_000006_location_information_cr_fv
+8796093342149	a_000006_no_of_floors_cr_fv
+8796093374917	a_000006_no_of_lifts_cr_fv
+---------------------------------------------------------------------------------------------
+############################################
+     correct relationed queries
+############################################
+SELECT {fvs:PK},{fvs:code},{fd:PK},{fd:code},{fvs:featureDescriptor}
+FROM {FeatureValueSet AS fvs},{FeatureDescriptor AS fd}
+WHERE {fd:PK} = {fvs:featureDescriptor}
+
+SELECT {fvs:PK},{fv:featureValueSet}
+FROM {FeatureValueSet AS fvs},{FeatureValue AS fv}
+WHERE {fv:featureValueSet} = {fvs:PK}
+
+SELECT {fvs:PK},{fvs:code},{fd:PK},{fvs:featureDescriptor}
+FROM {FeatureValueSet AS fvs},{FeatureDescriptor AS fd}
+WHERE {fd:PK} = {fvs:featureDescriptor}
+
+
+
+SELECT {fvs:PK},{fvs:code},{fvs:item}
+FROM {FeatureValueSet AS fvs}
+
+8796130632132	leg1_description	8796093084984
+8796130664900	leg1_name	        8796093084984
+8796130697668	leg1_time	        8796093084984
+8796130730436	leg1_mapurl      	8796093084984
+
+
+SELECT {fvs:PK},{fvs:code},{fvs:item}
+FROM {FeatureValueSet AS fvs},{FeatureValue AS fv}
+WHERE {fvs:PK}={fv:featureValueSet}
+
+
+
+##############################################
+  
+  
+-----------------------------------------------------------------------------------------------
+SELECT {mf:name}
+FROM {MediaFormat AS mf}
+-----------------------------------------------------
+SELECT {fvs:code},{mf:name}
+FROM {FeatureValueSet AS fvs {fvs} IN ('name','latitude')}
+
+------------------------------------------------------------
+
+SELECT {fvs:code},{fd:code}
+FROM {FeatureValueSet AS fvs},{FeatureDescriptor AS fd},{FeatureValue AS fv}
+WHERE {fv:featureValueSet} = {fvs:PK}
+
+-------------------------------------------------------------------
+
+SQL Working Query
+
+SELECT fvs.PK,fvs.p_code AS FEATURE_VALUE_SET_CODE,fvs.p_item,p.code AS SHIP_CODE,fv.p_value,fd.p_code,p.p_galleryimages
+FROM Products p JOIN FeatureValueSet fvs on fvs.P_PRODUCT = p.pk
+                LEFT JOIN FeatureDescriptor fd ON fd.pk = fvs.p_featuredescriptor
+                LEFT JOIN FeatureValue fv ON fvs.PK = fv.P_FEATUREVALUESET
+                LEFT JOIN enumerationvalues ptype ON (p.P_TYPE = ptype.pk AND ptype.code = 'SHIP')
+WHERE fd.p_code in ('name','latitude','longitude','usps')
+
+Refer this --  SHIP_CONTENT
+
+SELECT fvs.PK,fvs.p_code AS FEATURE_VALUE_SET_CODE,fvs.p_item,p.code AS SHIP_CODE,fv.p_value,fd.p_code,p.p_galleryimages
+FROM Products p JOIN FeatureValueSet fvs on fvs.P_PRODUCT = p.pk
+                LEFT JOIN FeatureDescriptor fd ON fd.pk = fvs.p_featuredescriptor
+                LEFT JOIN FeatureValue fv ON fvs.PK = fv.P_FEATUREVALUESET
+                LEFT JOIN enumerationvalues ptype ON (p.P_TYPE = ptype.pk AND ptype.code = 'SHIP')
+WHERE fd.p_code in ('name','latitude','longitude','usps') --AND p.p_galleryimages != null
+
+
+Select mf.P_QUALIFIER AS MEDIA_FORMAT,m.pk AS MEDIA_PK,p.p_galleryImages
+from Products p, MediaContainer mc,MEDIAS m,MediaFormat mf
+where mf.pk = m.P_MEDIAFORMAT and 
+      m.P_MEDIACONTAINER = mc.pk and 
+      mf.pk=m.p_mediaFormat and 
+      p.p_galleryImages like CONCAT('%',CONCAT(MC.PK,'%')) 
+
+-------------------------------------------------------------------------------------------------
+Working Hybris Query:-
+SELECT {accom:name}ACCOM_NAME,{accom:code}ACCOM_CODE,{fd:code}FEATUTRE_DESCRIPTOR,{fv:value}FEATURE_VALUE,{mediaFormat:name}MEDIA_FORMAT,{media:pk}MEDIA_PK
+FROM {Accommodation as accom
+      JOIN AccommodationType as at ON ({accom:type} = {at:pk} AND {at:code} = 'SHIP')
+      JOIN FeatureValueSet As fvs ON {fvs:product}={accom:pk}
+      LEFT  JOIN FeatureDescriptor as fd ON ( {fd:pk}={fvs:featuredescriptor} AND {fd:code} in ('name','latitude','longitude','usps'))
+      LEFT  JOIN FeatureValue as fv ON {fv:featureValueSet}={fvs:pk}
+  LEFT JOIN MediaContainer as mediaContainer  ON {accom:galleryImages}
+  LIKE CONCAT( '%', CONCAT( {mediaContainer:PK} , '%' ))
+  LEFT JOIN Media as media ON {media:mediaContainer}={mediaContainer:pk}
+  LEFT JOIN MediaFormat as mediaFormat ON ({mediaFormat:pk}={media:mediaFormat} AND {mediaFormat:name} IN ('medium'))
+  
+     }
+  
+  Working SQL Query:-
+  SELECT fvs.p_code AS FEATURE_VALUE_SET_CODE,fvs.P_PRODUCT,p.code AS SHIP_CODE,fv.p_value AS FEATURE_VALUE,fd.p_code AS FEATUTRE_DESCRIPTOR,p.p_galleryimages
+FROM Products p RiGHT JOIN enumerationvalues ptype ON (p.P_TYPE = ptype.pk AND ptype.code = 'SHIP')
+                JOIN FeatureValueSet fvs on fvs.P_PRODUCT = p.pk
+                LEFT JOIN FeatureDescriptor fd ON (fd.pk = fvs.p_featuredescriptor AND fd.p_code in ('name','latitude','longitude','usps'))
+                LEFT JOIN FeatureValue fv ON fvs.PK = fv.P_FEATUREVALUESET
+                LEFT JOIN MediaContainer mediaContainer  ON  p.p_galleryImages LIKE CONCAT( '%', CONCAT(  mediaContainer.PK   , '%' ))
+                LEFT JOIN Medias media ON  media.p_mediaContainer  = mediaContainer.pk
+                LEFT JOIN MediaFormat mediaFormat ON ( mediaFormat.pk  = media.p_mediaFormat   AND  mediaformat.p_qualifier IN ('medium'))
+--WHERE p.p_catalogversion = 8796093121113
+
+----------------------------------------------------------------------------
+
+SELECT {accom:name}ACCOM_NAME{accom:code}ACCOM_CODE,{mediaFormat:name}MEDIA_FORMAT,{accom:name}
+FROM {Accommodation as accom
+      JOIN AccommodationType as at ON ({accom:type} = {at:pk} AND {at:code} = 'SHIP')
+      JOIN FeatureValueSet As fvs ON {fvs:product}={accom:pk}
+      LEFT  JOIN FeatureDescriptor as fd ON ( {fd:pk}={fvs:featuredescriptor} AND {fd:code} in ('name','latitude','longitude','usps'))
+      LEFT  JOIN FeatureValue as fv ON {fv:featureValueSet}={fvs:pk}
+  LEFT JOIN MediaContainer as mediaContainer  ON {accom:galleryImages}
+  LIKE CONCAT( '%', CONCAT( {mediaContainer:PK} , '%' ))
+  LEFT JOIN Media as media ON {media:mediaContainer}={mediaContainer:pk}
+  LEFT JOIN MediaFormat as mediaFormat ON ({mediaFormat:pk}={media:mediaFormat} AND {mediaFormat:name} IN ('medium'))
+}
+
+--------------------------------------------------------------------------------------------------
+
+filtered query
+
+SELECT fvs.p_code AS FEATURE_VALUE_SET_CODE,fvs.P_PRODUCT,p.code AS SHIP_CODE,fv.p_value AS FEATURE_VALUE,fd.p_code AS FEATUTRE_DESCRIPTOR,p.p_galleryimages
+FROM Products p,enumerationvalues ptype,FeatureValueSet fvs,FeatureDescriptor fd,FeatureValue fv,MediaContainer mediaContainer,Medias media,MediaFormat mediaFormat
+WHERE p.P_TYPE = ptype.pk AND ptype.code = 'SHIP'
+      AND fvs.P_PRODUCT = p.pk AND fd.pk = fvs.p_featuredescriptor AND fd.p_code in ('name','latitude')
+      AND fvs.PK = fv.P_FEATUREVALUESET AND p.p_galleryImages LIKE CONCAT( '%', CONCAT(  mediaContainer.PK   , '%' )) AND 
+      media.p_mediaContainer  = mediaContainer.pk AND mediaFormat.pk = media.p_mediaFormat -- AND mediaformat.p_qualifier IN ('small','medium')
+	  
+	  
+-----------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE Procedure GET_ALL_SHIPS AS
+BEGIN 
+   dbms_output.put_line('Hello World!');  
+END;
+
+
+---------------------------------------------------------------------------------------------
+
+Working Hybris query
+
+SELECT {accom:code}SHIP_CODE,{fd:code}FEATUTRE_DESCRIPTOR,{mediaFormat:name}MEDIA_FORMAT,{media:pk}MEDIA_PK
+FROM {Accommodation AS accom},{AccommodationType AS at},{FeatureValueSet AS fvs},{FeatureDescriptor AS fd},{FeatureValue AS fv},{MediaContainer AS mediaContainer},{Media AS media},{MediaFormat AS mediaFormat}
+WHERE {at:code} = 'SHIP' AND {accom:type}={at:PK} AND {fvs:product}={accom:pk} AND {fd:pk}={fvs:featuredescriptor} AND {fd:code} in ('name','latitude','longitude','usps') AND {fv:featureValueSet}={fvs:pk} AND {accom:galleryImages}
+  LIKE CONCAT( '%',CONCAT({mediaContainer:PK},'%')) AND {media:mediaContainer}={mediaContainer:pk} AND {mediaFormat:pk}={media:mediaFormat} AND {mediaFormat:name} IN ('medium')
+  
+  
+------------------------------------------------------------------------------------------------
+
+up to this it is fine
+
+SELECT {accom:code}SHIP_CODE
+FROM {Accommodation AS accom},{AccommodationType AS at},{FeatureValueSet AS fvs},{FeatureDescriptor AS fd},{FeatureValue AS fv},{MediaContainer AS mediaContainer},{Media AS media},{MediaFormat AS mediaFormat}
+WHERE {at:code} = 'SHIP' AND {accom:type}={at:PK} AND {fvs:product}={accom:pk} AND {fd:pk}={fvs:featuredescriptor} AND {fd:code} in ('name','latitude','longitude','usps') AND {fv:featureValueSet}={fvs:pk} AND {fv:featureValueSet}={fvs:pk} AND {accom:galleryImages}
+  LIKE CONCAT( '%',CONCAT({mediaContainer:PK},'%')) AND {media:mediaContainer}={mediaContainer:pk} AND {mediaFormat:pk}={media:mediaFormat}
+  
+
+SELECT {accom:code}SHIP_CODE,{fd:code}FEATUTRE_DESCRIPTOR,{mediaFormat:name}MEDIA_FORMAT,{media:pk}MEDIA_PK
+FROM {Accommodation AS accom},{AccommodationType AS at},{FeatureValueSet AS fvs},{FeatureDescriptor AS fd},{FeatureValue AS fv},{MediaContainer AS mediaContainer},{Media AS media},{MediaFormat AS mediaFormat}
+WHERE {at:code} = 'SHIP' AND {accom:type}={at:PK} AND {fvs:product}={accom:pk} AND {fd:pk}={fvs:featuredescriptor} AND {fd:code} in ('name','latitude','longitude','usps') AND {fv:featureValueSet}={fvs:pk} AND {fv:featureValueSet}={fvs:pk} AND {accom:galleryImages}
+  LIKE CONCAT( '%',CONCAT({mediaContainer:PK},'%')) AND {media:mediaContainer}={mediaContainer:pk} AND {mediaFormat:pk}={media:mediaFormat}  AND {mediaFormat:name} IN ('medium')  
+  
+  
+----------------------------------------------------------------------------------------------------------------------
+
+cabin info,
+
+SELECT {floor:code}FLOOR_CODE, {floor:floorNo}FLOOR_NO,{mf:name}MEDIA_FORMAT,{m:pk}MEDIA_PK
+FROM  { Accommodation AS accom JOIN Floor AS floor ON {accom:pk}={floor:accommodation} 
+      LEFT JOIN MediaContainer as mc ON {mc:floor} ={floor:pk} 
+	  LEFT JOIN Media as m ON {m.mediaContainer}={mc.pk} 
+	  LEFT JOIN MediaFormat as mf ON ({mf:pk}={m:mediaFormat} AND {mf:name} in ('medium') )}
+	  
+---------------------------------------------------------------------------------------------------------------------------
+
+
+
+----------------------------------------------------------
+
+Get All Ships Query
+
+SELECT {accom:PK}ACCOMMODATION_PK
+FROM {Accommodation AS accom},{AccommodationType AS at}
+WHERE {accom:type}={at:PK} AND {at:code} = 'SHIP'
+
+------------------------------------------------------------------------------
+
+maheshbabu.valipi@
+
+--------------------------------------------------------
+
+Delete {ds:PK}
+FROM {DarkSite AS ds}
+Where {ds:darkSiteURL} = '/holiday/alerts'
+
+---------------------------------------------------
+SELECT {mf:name},{mf:code},{mf:galleryVideos}
+FROM {Location AS mf}
+Where p_name='Turkey'
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

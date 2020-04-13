@@ -1,0 +1,101 @@
+1. Create a cron job item in *-item.xml file
+   
+     example : <itemtype code="DemoCronJob" generate="true" autocreate="true" jaloclass="com.room.job.jalo.DemoCronJob" extends="CronJob"></itemtype>
+	
+2. update the system
+
+3. Create your job class which contains the code for the agenda(what we want to achieve)
+  
+    Example Class:
+     
+    public class MyJob_1 extends AbstractJobPerformable<DemoCronJobModel>
+    {
+	private static final Logger LOG = Logger.getLogger(MyJob_1.class.getName());
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.hybris.platform.servicelayer.cronjob.AbstractJobPerformable#perform(de.hybris.platform.cronjob.model.CronJobModel
+	 * )
+	 */
+	@Override
+	public PerformResult perform(final DemoCronJobModel arg0)
+	{
+		LOG.info("#### MyJob_1 Starts ####");
+		LOG.info("#### MyJob_1 Ends ####");
+		return new PerformResult(CronJobResult.SUCCESS, CronJobStatus.FINISHED);
+	}
+
+     }
+
+4. Make an entry for the cron job class in *-spring.xml file
+    
+     example : <bean id="demoCronJob" class="com.room.job.MyJob_1" parent="abstractJobPerformable" scope="tenant"></bean>
+         
+	  Note: this bean id becomes the job code in impex.
+
+5. create an instance of job with the impex and this can be triggerred by HMC
+
+    example:
+    
+        INSERT_UPDATE DemoCronJob;code[unique=true];job(code);sessionLanguage(isocode);
+	;myDemoCronJob;demoCronJob;en;
+
+	Note: this unique job becomes the CronJob code in triggers.
+
+6. create a trigger for a cron job using impex
+  
+   example: 
+     
+        INSERT_UPDATE Trigger; cronJob(code)[unique=true]; cronExpression
+        ; myDemoCronJob; 0 30 10-11 ? * WED,FRI
+
+------------------------------------------------------------------------------------------
+
+Creating an attribute in the above cron job
+
+7. create an attribute in the cron job 
+
+   example: <itemtype code="DemoCronJob" generate="true" autocreate="true" jaloclass="com.room.job.jalo.DemoCronJob" extends="CronJob">
+	
+	    <attributes>
+	       <attribute qualifier="exportType" autocreate="true" type="java.lang.String">
+			 <description>used to identify export type</description>
+			 <modifiers read="true" write="true" />
+			 <persistence type="property"/>
+		   </attribute>
+	    </attributes>
+
+	  </itemtype>
+
+8. Update the system
+
+9. updated impex for the cron job
+  
+     INSERT_UPDATE DemoCronJob;code[unique=true];job(code);sessionLanguage(isocode);exportType;
+     ;myDemoCronJob;demoCronJob;en;Hello;
+
+---------------------------------------------------------------------------------------
+
+Creating another instance of job
+
+10. INSERT_UPDATE DemoCronJob;code[unique=true];job(code);sessionLanguage(isocode);exportType;
+    ;demoCronJob_1;demoCronJob;en;Chetan;
+
+----------------------------------------------------------------------------------------
+
+Creating Multiple instances 
+
+INSERT_UPDATE DemoCronJob;code[unique=true];job(code);sessionLanguage(isocode);exportType;
+;demoCronJob_1;demoCronJob;en;Chetan;
+;demoCronJob_2;demoCronJob;en;Sid;
+;demoCronJob_3;demoCronJob;en;Montya;
+;demoCronJob_4;demoCronJob;en;Mama;
+
+
+INSERT_UPDATE Trigger; cronJob(code)[unique=true]; cronExpression
+;demoCronJob_1; 0 15 12 1/1 * ? *
+;demoCronJob_2; 0 30 10-11 ? * WED,FRI
+;demoCronJob_3; 0 30 10-11 ? * WED,FRI
+;demoCronJob_4; 0 30 10-11 ? * WED,FRI

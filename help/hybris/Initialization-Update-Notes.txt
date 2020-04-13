@@ -1,0 +1,17 @@
+Update through cmd:
+ant clean all updatesystem -Dtenant=master
+
+ant updatesystem -Dtenant=master -DincludedExtensions=mycustomext* -DexcludedExtensions=platform 
+
+
+Initialize through cmd:
+ant initialize -Dtenant=master
+
+When your hybris license is about to expire
+update users set createdTS='2016-04-15 10:07:42';
+format: YYYY-MM-DD
+
+ant customize clean all
+
+install B2CCheckout addon
+ant addoninstall -Daddonnames="b2ccheckoutaddon" -DaddonStorefront.yacceleratorstorefront="yacceleratorstorefront"

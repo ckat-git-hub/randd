@@ -1,0 +1,26 @@
+In above location add driver classes
+
+\hybris\bin\platform\lib\dbdriver
+
+for oracle add these properties in local.properties
+-----------------------------------------------------------------
+db.driver=oracle.jdbc.driver.OracleDriver
+db.url=jdbc:oracle:thin:@10.145.128.128:1525:HYBRISD3
+db.username=hybrisd3
+db.password=hybrisd3_123
+oracle.dataTS=HYBRISD3_TS
+oracle.indexTS=HYBRISD3_TS
+
+
+For MySql add these properties in local.properties
+----------------------------------------------------------------
+db.url=jdbc:mysql://localhost:3306/pheonix_ngs_alt?useConfigs=maxPerformance&characterEncoding=utf8
+db.driver=com.mysql.jdbc.Driver
+db.username=ngsuser
+db.password=ngsuser@123
+db.tableprefix=
+mysql.optional.tabledefs=CHARSET=utf8 COLLATE=utf8_bin
+mysql.tabletype=InnoDB
+
+
+
