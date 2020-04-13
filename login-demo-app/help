@@ -1,0 +1,46 @@
+Softwares Used:
+
+1. Apache tomcat 9.0.14
+2. java 8
+3. Spring 5.2.3 - Uses Spring security
+4. No DataBase Integration
+
+
+Urls to Run:
+
+   http://localhost:8080/login-demo-app/antiquedata/login
+   
+   or 
+   
+   http://localhost:8080/login-demo-app/antiquedata/
+   
+   
+   
+Roles: ADMIN and USER
+
+
+
+Credentials: 
+  
+    admin/admin
+    
+    user/user
+   
+--------------------------------------------------------------------
+Refer this while integrating with product
+
+https://www.logicbig.com/tutorials/spring-framework/spring-security/authorization-config.html
+
+-----------------------------------------------------------------
+
+youtube references
+
+https://www.youtube.com/watch?v=egXtoL5Kg08
+
+https://github.com/TechPrimers/spring-security-db-example
+
+https://www.youtube.com/watch?v=xRE12Y-PFQs
+
+
+--------------------------------------------------------------------------
+
