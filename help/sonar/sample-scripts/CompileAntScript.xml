@@ -1,0 +1,292 @@
+﻿<?xml version="1.0"?>
+<project name="eReaderServer_Compile_Script" default="normal_build" basedir="..\" xmlns:ivy="antlib:org.apache.ivy.ant">
+  <property environment="env" />
+  <property file="ant/ant-global.properties" />
+  <property name="IsCoverageBuild" value="false"/>
+  <property name="DisplayCopiedFilesInWar" value="false"/>
+  <property name="warFilename" value="eReaderServer.war"/>
+	
+  <!--- - - - - - - - - - - - - - - - -
+           Create the master class path that will be used by all targets in the script. 
+          - - - - - - - - - - - - - - - - - -->
+  <path id="classpath.compile">
+   <fileset dir="${dir.webContent}/WEB-INF/lib">
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${dir.librariesPath}">
+      <include name="**/*.jar"/>
+    </fileset>
+    <!-- These are the cobalt group specific libraries that all the projects should include.-->
+    <fileset dir="${env.buildextensionroot}">
+      <include name="JUnit/*.jar"/>
+      <include name="OtherLibraries/**/*.jar"/>
+    </fileset>
+  </path>
+
+  <!-- =================================
+          target: normal_build
+          description: This is the entry target for a "normal" build. It will compile the main source 
+                       code and the unit tests. Integration tests will not be compiled since 
+                       it is part of the coverage build. 
+         ================================= -->
+  <target name="normal_build" description="Normal build for the eReaderServer project" depends="-init, -compileUserRegistrationService, -compile, -compile_unitTests, -createJar, -createWar, -stageProperties">
+    <echo level="info" message="Normal (aka Non-Coverage) build has completed." />
+  </target>
+	
+  <!-- =================================
+          target: coverage_build
+          description: This is the entry target for a "coverage" build. It will compile the
+                       main source code, unit tests and integration tests.
+         ================================= -->
+  <target name="coverage_build" description="Coverage build for the eReaderServer project" depends="-init, -compileUserRegistrationService, -compile, -compile_unitTests, -sonar_for_ci">
+    <echo level="info" message="Coverage build has completed." />
+  </target>
+	
+  <!-- =================================
+	          target: -sonar_for_ci
+	          description: This is the entry target for sonar scanning. It scans code through sonar rules and publishes the report in sonar server.
+	     ================================= -->
+  <target name="-sonar_for_ci" description="Sonar scan for the eReaderServer project">
+  	<ant antfile="ant\SonarAntScript.xml" target="sonar-scanning" inheritall="false" inheritrefs="false"></ant>
+  </target>
+
+  <!-- - - - - - - - - - - - - - - - - -
+          target: -init
+          description: Perform all initialization tasks like cleaning up old compiled code, 
+                       create directories that do not exist, etc.
+         - - - - - - - - - - - - - - - - - -->
+  <target name="-init">
+    <echo level="verbose">Deleting old compiled binaries, if existing...</echo>
+    <delete dir="${dir.binaries}" failonerror="false" includeemptydirs="true"/>
+    <delete dir="${dir.testBinaries}" failonerror="false" includeemptydirs="true"/>
+  	<delete dir="${dir.tmpBuildDir}" failonerror="false" includeemptydirs="true"/>
+  	<delete dir="${dir.dist}" failonerror="false" includeemptydirs="true"/>
+	<delete dir="${dir.generated}" failonerror="false" includeemptydirs="true" />
+  	<delete dir="${testResultsFolder}" failonerror="false" includeemptydirs="true"/>
+
+    <echo level="verbose">Creating directories for the compiled binaries - '${dir.binaries}' and '${dir.testBinaries}' ...</echo>
+    <mkdir dir="${dir.binaries}"/>
+    <mkdir dir="${dir.testBinaries}"/>
+  	<mkdir dir="${dir.tmpBuildDir}"/>
+  	<mkdir dir="${dir.dist}"/>
+	<mkdir dir="${dir.generated}" />
+  	<mkdir dir="${testResultsFolder}"/>
+  		
+  	
+    <!-- Resolve dependencies with Ivy	-->
+    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant">
+        <classpath>
+            <fileset dir="ant/ivy" includes="ivy-*.jar" />
+        </classpath>
+    </taskdef>
+    <ivy:settings file="${ivy.settings}" />
+  	     <ivy:retrieve file="ant/ivy/ivy.xml" conf="build"
+    	pattern="${dir.webContent}/WEB-INF/lib/[artifact]-[revision].[ext]" sync="true" taskname="ivy" />  	
+    	     	  	
+  </target>
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+		          target: -codeCoverageInstrumentation
+		          description: Calls the CM supported CoberturaAntScript.xml, which is responsible for 
+		                       instrumenting the binaries for code coverage.
+		                       
+		                       The CoberturaAntScript.xml ANT script is also called by Team Build.
+		         - - - - - - - - - - - - - - - - - -->
+  <target name="-codeCoverageInstrumentation">
+	 <echo level="info">Code coverage - Instrumenting the binaries via the CoberturaAntScript.xml file ...</echo>
+	 <ant antfile="ant/CoberturaAntScript.xml" target="coverage-instrumentation" inheritall="false" inheritrefs="false"/>
+  </target>
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+		          target: -unitTests
+		          description: Calls the CM supported UnitTestAntScript.xml, which is responsible for 
+		                       executing the test cases for the project.
+		                       
+		                       The UnitTestAntScript.xml ANT script is also called by Team Build.
+		         - - - - - - - - - - - - - - - - - -->
+   <target name="-unitTests">
+     <echo level="info">Executing unit test cases via the UnitTestAntScript.xml file ...</echo>
+       <ant antfile="ant\UnitTestAntScript.xml" inheritall="false" inheritrefs="false">
+	      <property name="dir.TestResultsFolder" value="${testResultsFolder}" />
+	      <property name="log.file" value="MergedTestResults.xml" />
+	   </ant>
+  </target>
+
+  <!-- - - - - - - - - - - - - - - - - - 
+           target: -compile                      
+           description: Compile the source code and place the compiled libraries in the respective 
+                        folder. The code will be compiled using version ${jdk.version} of the SDK.
+         - - - - - - - - - - - - - - - - - -->
+  <target name="-compile">
+	<path id="classpath.compile.generated">
+		<fileset dir="${dir.generated}/com/thomson" includes="**/*.class" />
+	</path>
+      
+    <echo level="verbose">Compiling the source code...</echo>
+    <javac destdir="${dir.binaries}" source="${jdk.version}" target="${jdk.version}"
+           debug="true">
+      <src path="${dir.source}"/>
+      <classpath refid="classpath.compile"/>
+      <classpath refid="classpath.compile.generated"/>
+	</javac>
+  </target>
+
+  <!-- - - - - - - - - - - - - - - - - - 
+          target: -compile_unitTests                      
+          description: Compile the unit test source code and place the compiled libraries in the 
+                       respective binary folder. The code will be compiled using version ${jdk.version} of the SDK.
+         - - - - - - - - - - - - - - - - - -->
+  <target name="-compile_unitTests">
+    <echo level="verbose">Compiling the unit test source code...</echo>
+    <javac destdir="${dir.testBinaries}" source="${jdk.version}" target="${jdk.version}" encoding="iso-8859-1">
+      <src path="${dir.unitTestSource}"/>
+      <classpath>
+        <pathelement path="${dir.binaries}"/>
+        <path refid="classpath.compile"/>
+      </classpath>      
+    </javac>
+  </target>
+
+  <!-- - - - - - - - - - - - - - - - - - 
+          target: -compile_integrationTests                      
+          description: Compile the integration test source code and place the compiled libraries in the 
+                       respective binary folder. The code will be compiled using version ${jdk.version} of the SDK.
+         - - - - - - - - - - - - - - - - - -->
+  <target name="-compile_integrationTests">
+    <echo level="verbose">Compiling the integration test source code...</echo>
+    <javac destdir="${dir.testBinaries}" source="${jdk.version}" target="${jdk.version}">
+      <src path="${dir.integrationTestSource}"/>
+      <classpath>
+        <pathelement path="${dir.binaries}"/>
+        <path refid="classpath.compile"/>
+      </classpath>
+    </javac>
+  </target>
+  
+	<!-- - - - - - - - - - - - - - - - - -
+	        target: -compile User Registration Service
+	        description: Per the Infra team; we need the properties files deployed to the NAS with the WAR file.
+	        - - - - - - - - - - - - - - - - - -->
+	<target name="-compileUserRegistrationService">
+		<property name="basedir.absolute.path" location=""/>
+		<echo level="verbose">Compiling the UserRegistration Service</echo>
+        <exec executable="wsimport">
+			<arg value="-s" />
+			<arg value="${basedir.absolute.path}/${dir.generated}" />
+			<arg value="-d" />
+			<arg value="${basedir.absolute.path}/${dir.generated}" />
+            <arg value="${basedir.absolute.path}/${dir.source}/wsdl/UserRegistrationService_1.0.wsdl" />
+            <arg value="-wsdllocation" />
+			<arg value="/wsdl/UserRegistrationService_1.0.wsdl" />
+        </exec>
+        
+		<echo level="verbose">Compiling the Entitlement Service</echo>
+        <exec executable="wsimport">
+			<arg value="-s" />
+			<arg value="${basedir.absolute.path}/${dir.generated}" />
+			<arg value="-d" />
+			<arg value="${basedir.absolute.path}/${dir.generated}" />
+            <arg value="${basedir.absolute.path}/${dir.source}/wsdl/EntitlementService_1.0.wsdl" />
+            <arg value="-wsdllocation" />
+			<arg value="/wsdl/EntitlementService_1.0.wsdl" />
+        </exec>
+        
+		<echo level="verbose">Compiling the Customer Service</echo>
+        <exec executable="wsimport">
+			<arg value="-s" />
+			<arg value="${basedir.absolute.path}/${dir.generated}" />
+			<arg value="-d" />
+			<arg value="${basedir.absolute.path}/${dir.generated}" />
+            <arg value="${basedir.absolute.path}/${dir.source}/wsdl/CustomerService_2.0.wsdl" />
+            <arg value="-wsdllocation" />
+			<arg value="/wsdl/CustomerService_2.0.wsdl" />
+        </exec>        
+
+		<copy todir="${dir.binaries}" overwrite="true" >
+			<fileset dir="${dir.generated}">
+				<include name="**/*.class" />
+			</fileset>
+			<fileset dir="${dir.source}">
+				<include name="**/*.wsdl" />
+				<include name="**/*.xsd" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+		          target: -codeCoverageReporting
+		          description: Calls the CM supported CoberturaAntScript.xml, which is responsible for 
+		                       creating the reports of the code coverage.
+		                       
+		                       The CoberturaAntScript.xml ANT script is also called by Team Build.
+		         - - - - - - - - - - - - - - - - - -->
+  <target name="-codeCoverageReporting">
+    <echo level="info">Code coverage - Generating the code coverage report via the CoberturaAntScript.xml file ...</echo>
+    <ant antfile="ant\CoberturaAntScript.xml" target="coverage-report" inheritall="false" inheritrefs="false">
+    </ant>
+  </target>
+
+  <!-- - - - - - - - - - - - - - - - - - 
+          target: -createJar                      
+          description: Package the compiled code into a JAR.
+         - - - - - - - - - - - - - - - - - -->
+  <target name="-createJar" >
+    <echo level="verbose">Packaging the code into a JAR file...</echo>
+    <jar jarfile="${path.jarFile}"
+         manifest="${dir.webContent}\META-INF\MANIFEST.MF">
+      <fileset dir="${dir.binaries}" casesensitive="yes">
+        <exclude name="**/*.java"/>
+      </fileset>
+    </jar>
+  </target>
+
+	<!-- - - - - - - - - - - - - - - - - -
+	        target: -stageProperties
+	        description: Per the Infra team; we need the properties files deployed to the NAS with the WAR file.
+	        - - - - - - - - - - - - - - - - - -->
+	    <target name="-stageProperties">
+	        <echo level="verbose">Storing properties with war file in dist folder.</echo>
+	        <copy todir="${dir.dist}" overwrite="true" flatten="true">	            
+	            <fileset dir="${dir.resources}">
+	                <include name="*.properties" />
+	                <include name="*Logging.xml" />
+	                <include name="*.version" />
+	            </fileset>
+	        </copy>	        
+	    </target>
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: -createWar                      
+          description: Package the compiled code into a WAR file, so that it can be deployed.
+         - - - - - - - - - - - - - - - - - -->
+  <target name="-createWar" depends="-createJar">
+    <echo level="verbose">Creating the WAR file...</echo>
+    <!-- Copy copiled classes over to "classes" folder in the war -->
+    <echo level="debug">Copying files from ${dir.binaries} to ${dir.webContent}/WEB-INF/classes ...</echo>
+    <copy todir="${dir.webContent}/WEB-INF/classes" overwrite="true" verbose="${DisplayCopiedFilesInWar}">
+      <fileset dir="${dir.binaries}"/>
+    </copy>
+    <copy todir="${dir.webContent}/WEB-INF/classes" overwrite="true" verbose="${DisplayCopiedFilesInWar}">
+      <fileset dir="${dir.resources}">
+        <include name="eReaderServer.properties" />
+      	<include name="*.html" />
+      </fileset>
+    </copy>
+    <war destfile="${dir.dist}/${warFilename}" manifest="${dir.webContent}/META-INF/MANIFEST.MF" needxmlfile="false">
+      <fileset dir="${dir.webContent}">
+        <exclude name="**/${jarFilename}/**"/>
+      </fileset>
+    </war>
+  </target>
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+	          target: -sonar
+	          description: Calls the CM supported SonarAntScript.xml, which is responsible for 
+	                       creating the reports of the code coverage.
+	                       
+	         - - - - - - - - - - - - - - - - - -->
+  <target name="-sonar">
+    <echo level="info">Code scan and coverage - Publishing the code analysis report via the SonarAntScript.xml file ...</echo>
+    	<ant antfile="ant\SonarAntScript.xml" target="sonar" inheritall="false" inheritrefs="false">
+    </ant>
+  </target>
+</project>

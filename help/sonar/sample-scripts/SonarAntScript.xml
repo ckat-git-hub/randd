@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<project name="ereader-server_CodeCoverage_Script" default="sonar-scanning" basedir="../" xmlns:sonar="antlib:org.sonar.ant">
+	<property environment="env" />
+	<!--IMPORTANT : The following properties are used by TeamBuild, do not rename/delete these properties-->
+	<property file="ant/ant-global.properties" />
+	<property file="${dir.tmpBuildDir}/build.properties" />
+	<!-- Define the Sonar global properties -->
+	<!-- Prod Sonar Server Url-->
+	<property name="sonar.host.url" value="http://sonar.pe.int.thomsonreuters.com/" />
+		
+	<!-- Developer Sonar Server Url-->
+	<!-- <property name="sonar.host.url" value="http://spesonar-staging.int.thomsonreuters.com/" /> -->
+
+	<!-- Define the Sonar project properties -->
+	<property name="sonar.projectKey" value="ereader-server" />
+	<property name="sonar.projectName" value="EReader Server" />
+	<property name="sonar.projectVersion" value="1.1" />
+    <property name="sonar.sources" value="${dir.source}" />
+    <property name="sonar.tests" value="${dir.unitTestSource}" />
+    <property name="sonar.java.binaries" value="${dir.binaries}" />
+    <property name="sonar.java.libraries" value="${dir.webContent}\WEB-INF\lib" />
+    <property name="sonar.dynamicAnalysis" value="reuseReports" />
+    <property name="sonar.junit.reportPaths" value="${dir.tmpBuildDir}\JUnitTest" />
+    <property name="sonar.core.codeCoveragePlugin" value="cobertura" />
+    <property name="sonar.cobertura.reportPath" value="${dir.tmpBuildDir}\coverage.xml" />
+	<property name="sonar.exclusions" value="**/*test*/**"/>
+	<property name="sonar.scm.disabled" value="true"/>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+		          target: sonar-scanning
+		          description: Responsible for 
+		                       creating the reports of the code coverage.
+		                       
+		    - - - - - - - - - - - - - - - - - -->
+	
+	<target name="sonar-scanning" description="Sonar scan for the eReaderServer project" depends="-codeCoverageInstrumentation, -unitTests, -codeCoverageReporting, -sonar">
+		<echo level="info" message="Sonar scan has completed." />
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+			          target: -codeCoverageInstrumentation
+			          description: Calls the CM supported CoberturaAntScript.xml, which is responsible for 
+			                       instrumenting the binaries for code coverage.
+			                       
+			                       The CoberturaAntScript.xml ANT script is also called by Team Build.
+	        - - - - - - - - - - - - - - - - - -->
+	<target name="-codeCoverageInstrumentation">
+		 <echo level="info">Code coverage - Instrumenting the binaries via the CoberturaAntScript.xml file ...</echo>
+		 <ant antfile="ant/CoberturaAntScript.xml" target="coverage-instrumentation" inheritall="false" inheritrefs="false"/>
+	</target>
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+			          target: -unitTests
+			          description: Calls the CM supported UnitTestAntScript.xml, which is responsible for 
+			                       executing the test cases for the project.
+			                       
+			                       The UnitTestAntScript.xml ANT script is also called by Team Build.
+			 - - - - - - - - - - - - - - - - - -->
+	<target name="-unitTests">
+	     <echo level="info">Executing unit test cases via the UnitTestAntScript.xml file ...</echo>
+	       <ant antfile="ant\UnitTestAntScript.xml" inheritall="false" inheritrefs="false">
+		      <property name="dir.TestResultsFolder" value="${testResultsFolder}" />
+		      <property name="log.file" value="MergedTestResults.xml" />
+		   </ant>
+	</target>
+	
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+			          target: -codeCoverageReporting
+			          description: Calls the CM supported CoberturaAntScript.xml, which is responsible for 
+			                       creating the reports of the code coverage.
+			                       
+			                       The CoberturaAntScript.xml ANT script is also called by Team Build.
+			  - - - - - - - - - - - - - - - - - -->
+	<target name="-codeCoverageReporting">
+	    <echo level="info">Code coverage - Generating the code coverage report via the CoberturaAntScript.xml file ...</echo>
+	    <ant antfile="ant\CoberturaAntScript.xml" target="coverage-report" inheritall="false" inheritrefs="false">
+	    </ant>
+	</target>
+	
+	<!-- Define the Sonar target -->
+    <target name="-sonar">
+    	<echo level="info">sonar coverage running</echo>
+
+    		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+    			<classpath>
+    				<fileset dir="${dir.librariesPath}" includes="*sonar-ant-task*.jar" />
+    			</classpath>
+    		</taskdef>
+<!--
+    		<property name="sonar.sources" value="${dir.source}" />
+    		<property name="sonar.binaries" value="${dir.binaries}" />
+ -->   	    
+    	    <sonar:sonar/>
+	</target>
+</project>
