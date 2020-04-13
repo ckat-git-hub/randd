@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project name="ereader-publisherui_CodeCoverage_Script" default="sonar" basedir="..\" xmlns:sonar="antlib:org.sonar.ant">
+	<property environment="env" />
+	<!--IMPORTANT : The following properties are used by TeamBuild, do not rename/delete these properties-->
+	<property file="ant/ant-global.properties" />
+	<property file="${dir.tmpBuildDir}/build.properties" />
+	<!-- Define the Sonar global properties -->
+	<property name="sonar.host.url" value="http://spesonar-staging.int.thomsonreuters.com" />
+
+	<!-- Define the Sonar project properties -->
+	<property name="sonar.projectKey" value="ereader-common" />
+	<property name="sonar.projectName" value="EReader Common" />
+	<property name="sonar.projectVersion" value="1.0" />
+    <property name="sonar.sources" value="${dir.source}" />
+    <property name="sonar.tests" value="${dir.unitTestSource}" />
+    <property name="sonar.java.binaries" value="${dir.binaries}" />
+    <property name="sonar.java.libraries" value="${dir.librariesPath}" />
+    <property name="sonar.dynamicAnalysis" value="reuseReports" />
+    <property name="sonar.junit.reportPaths" value="${dir.tmpBuildDir}\JUnitTest" />
+    <property name="sonar.core.codeCoveragePlugin" value="cobertura" />
+    <property name="sonar.cobertura.reportPath" value="${dir.tmpBuildDir}\coverage.xml" />
+	<property name="sonar.exclusions" value="**/*test*/**"/>
+	<property name="sonar.scm.disabled" value="true"/>
+
+
+	<!-- Define the Sonar target -->
+    <target name="sonar">
+    	<echo level="info">sonar coverage running</echo>
+
+    		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+    			<classpath>
+    				<fileset dir="${dir.librariesPath}/sonar" includes="*sonar-ant-task*.jar" />
+    			</classpath>
+    		</taskdef>
+    	    
+    	    <sonar:sonar/>
+	</target>
+</project>

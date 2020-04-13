@@ -1,0 +1,76 @@
+add in ivy.xml in Tesing section
+<dependency org="net.sourceforge.cobertura" name="cobertura" rev="2.1.1" conf="build, local" />
+
+
+add cobertura-2.1.1 jar file to location {your_project}/lib/build
+
+--------------------
+
+create sonarlib folder in the project
+and put "sonar.sonar-ant-task-2.3" jar file in the folder
+
+--------------------
+
+dir.sonarlibPath=sonarlib add in ant-global.properties of ereder-common
+
+-------------------
+
+add one sonar target developerbuild.xml file
+ <!-- ================================= 
+	          target: sonar
+	          description: This is the entry target that will inturn 
+	                       call all the other targets including sonar.
+	         ================================= -->
+	  <target name="sonar" depends="-init, -build, -codeCoverageInstrumentation, -unitTests, -codeCoverageReporting, -sonar">
+	    <echo message="Developer build has completed!" />
+	  </target>
+	  
+	  
+	  
+	  
+	  <!-- - - - - - - - - - - - - - - - - - 
+		          target: -sonar
+		          description: Calls the CM supported SonarAntScript.xml, which is responsible for 
+		                       creating the reports of the code coverage.
+		                       
+		         - - - - - - - - - - - - - - - - - -->
+		  <target name="-sonar">
+		    <echo level="info">Code scan and coverage - Publishing the code analysis report via the SonarAntScript.xml file ...</echo>
+		     <ant antfile="SonarAntScript.xml" target="sonar" inheritall="false" inheritrefs="false">
+		    </ant>
+		  </target>
+
+---
+
+need to add  encoding="iso-8859-1" in CompileAntScript.xml
+
+<echo level="verbose">Compiling the source code...</echo>
+    <javac destdir="${dir.binaries}" source="${jdk.version}" target="${jdk.version}"
+           debug="true">
+      <src path="${dir.source}"/>
+      <classpath refid="classpath.compile"/>
+      <classpath refid="classpath.compile.generated"/>
+	</javac>
+	
+	
+<echo level="verbose">Compiling the source code...</echo>
+   <javac destdir="${dir.binaries}" source="${jdk.version}" target="${jdk.version}" encoding="iso-8859-1"
+           debug="true">
+     <src path="${dir.source}"/>
+     <classpath refid="classpath.compile"/>
+     <classpath refid="classpath.compile.generated"/>
+</javac>
+
+Need to check with Rishi
+code smell in unit tests
+
+-------------------------------------------
+
+run in below sequence
+
+1. after compile you need to run Coverage instrumentation followed by Unit test --> Coverage reporting --> and finally Sonar 
+
+2. it will stop after -unitTests if your unit test execution is not success for all.....
+
+3. all you have to do is run -codeCoverageReporting, -sonar  separately 
+
