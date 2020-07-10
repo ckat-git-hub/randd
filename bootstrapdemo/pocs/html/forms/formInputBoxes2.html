@@ -1,0 +1,133 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />
+
+    <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="../../custom/table.css" />
+    <link rel="stylesheet" href="../../custom/grid.css" />
+    <link rel="stylesheet" href="../../custom/button.css" />
+    <link rel="stylesheet" href="../../custom/form.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+           <form id="antiqueFormData" name="antiqueFormData" method="POST" action="#">
+            <div class="col-sm-12 bDiv6">
+                <div class="form-row">
+                    <div class="form-group col-sm-1">
+                        <label id="formNo"><b>Form #</b></label>
+                        <input id="aFormNo" class="form-control-sm form-control-cxs cw-7em cmt-1" name="formNo" />
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <label id="recordNo"><b>Record #</b></label>
+                        <input id="aRecordNo" class="form-control-sm form-control-cxs cw-3em cmt-1" name="recordNo" />
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <label id="date"><b>Sales Date</b></label>
+                        <input id="aDate" class="form-control-sm form-control-cxs cw-6em cmt-1" name="date" />
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label id="customerName"><b>Customer Name</b></label>
+                        <input id="aCustomerName" class="form-control-sm cmt-1" name="customerName" />
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <label id="initials"><b>Initials</b></label>
+                        <input id="ainitials" class="form-control-sm form-control-cxs cw-6em cmt-1" name="initials" />
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label id="email"><b>Email</b></label>
+                        <input id="emailId" class="form-control-sm form-control-cxs cw-18em cmt-1" name="email" />
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label id="dealerName"><b>Dealer Name</b></label>
+                        <input id="dealerName" class="form-control-sm form-control-cxs cw-18em cmt-1" path="dealerName" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-sm-2">
+                        <label id="address"><b>Address</b></label>
+                        <input id="address" class="form-control-sm form-control-cxs cw-12em cmt-1" name="address" />
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <label id="city"><b>City</b></label>
+                        <input id="city" class="form-control-sm form-control-cxs cw-7em cmt-1" name="city" />
+                    </div>
+                    <div class="form-group col-sm-1">
+                       <label id="state"><b>State</b></label>
+                       <input id="state" class="form-control-sm form-control-cxs cw-3em cmt-1" name="state" />
+                    </div>
+                    <div class="form-group col-sm-1 cml-1">
+                       <label id="customerPhone"><b>Cust Ph #</b></label>
+                        <input id="customerPhone" class="form-control-sm form-control-cxs cw-7em cmt-1" name="customerPhone" />
+                    </div>
+                    <div class="form-group col-sm-1 cml-3">
+                       <label id="dealerPhone"><b>Dlr Ph #</b></label>
+                       <input id="dealerPhone" class="form-control-sm form-control-cxs cw-7em cmt-1" name="dealerPhone" />
+                    </div>
+                    <div class="form-group col-sm-1 cml-3">
+                       <label id="deliveryTime"><b>Dlvry Time</b></label>
+                       <input id="deliveryTime" class="form-control-sm form-control-cxs cw-12em cmt-1" name="deliveryTime" />
+                    </div>
+                    <div class="form-group col-sm-1 cml-4">
+                       <label id="invoiceNo"><b>Invoice #</b></label>
+                       <input id="invoiceNo" class="form-control-sm form-control-cxs cw-7em cmt-1" name="invoiceNo" />
+                    </div>
+                    <div class="form-group col-sm-1 cml-3">
+                       <label id="insurancePolicyNo"><b>Insu plcy #</b></label>
+                       <input id="insurancePolicyNo" class="form-control-sm form-control-cxs cw-7em cmt-1" name="insurancePolicyNo" />
+                    </div>
+                    <div class="form-group col-sm-1 cml-3">
+                       <label id="chesisNo"><b>Chesis #</b></label>
+                       <input id="chesisNo" class="form-control-sm form-control-cxs cw-7em cmt-1" name="chesisNo" />
+                    </div>
+                    <div class="form-group col-sm-2">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-sm-1">
+                        <label id="basicAmount"><b>Basic Amt</b></label>
+                        <input id="basicAmount" class="form-control-sm form-control-cxs cw-6em cmt-1" name="basicAmount" />
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <label id="insuranceAmount"><b>Insu Amt</b></label>
+                        <input id="insuranceAmount" class="form-control-sm form-control-cxs cw-5em cmt-1" name="insuranceAmount" />
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <label id="totalAmount"><b>Total Amt</b></label>
+                        <input id="totalAmount" class="form-control-sm form-control-cxs cw-6em cmt-1" name="totalAmount" />
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <label id="discount"><b>Discount</b></label>
+                        <input id="discount" class="form-control-sm form-control-cxs cw-6em cml-2 cmt-1" name="discount" />
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <label id="netAmount"><b>Net Amt</b></label>
+                        <input id="netAmount" class="form-control-sm form-control-cxs cw-6em cml-3 cmt-1" name="netAmount" />
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <label id="employer"><b>Employer</b></label>
+                        <input id="employer" class="form-control-sm form-control-cxs cw-6em cml-3 cmt-1" name="employer" />
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <label id="creditCardNo"><b>CC #</b></label>
+                        <input id="creditCardNo" class="form-control-sm form-control-cxs cw-6em cml-3 cmt-1" name="creditCardNo" />
+                    </div>
+                     <div class="form-group col-sm-1">
+                        <label id="remark"><b>Remark</b></label>
+                        <input id="remark" class="form-control-sm form-control-cxs cw-6em cml-3 cmt-1" name="remark" />
+                    </div>
+                     <div class="form-group col-sm-8">
+                    </div>
+                </div>
+              </div>
+            </form>
+            
+        </div>
+    </div>
+</body>
+        
+        
+        

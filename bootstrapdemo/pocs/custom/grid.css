@@ -1,0 +1,48 @@
+.custDiv1{
+  min-height:200px;
+  background-color: orange;
+  text-align: center;
+  margin: 2px;   
+}
+
+.headerDiv{
+    min-height:50px;   
+    background-color: orange;
+    text-align: center;
+    margin: 2px;   
+}
+
+.contentDiv{
+    min-height:500px;   
+    background-color: orange;
+    text-align: center;
+    margin: 2px;
+}
+
+.footerDiv{
+    min-height:50px;   
+    background-color: orange;
+    text-align: center;
+    margin: 2px;
+}
+
+.content3{
+    min-height:610px;   
+    background-color: orange;
+    text-align: center;
+    margin: 5px;
+}
+
+.content4{
+    min-height:610px;   
+    text-align: center;
+    margin: 5px;
+}
+
+.rawImgDiv {
+	overflow: auto;
+	max-height: 250px;
+	background-color: orange;
+    text-align: center;
+    border: solid thin;
+}

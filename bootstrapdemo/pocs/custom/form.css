@@ -1,0 +1,138 @@
+.form-control-cxs {
+    /* height: calc(2em + .375rem + 2px) !important; 
+    font-size: large  !important;
+    */
+    padding: .125rem .25rem !important;
+    line-height: 2;
+    border-radius: .3rem;
+}
+
+.cw-1em{
+	width: calc(1em + .375rem + 2px) !important;
+}
+
+.cw-2em{
+	width: calc(2em + .375rem + 2px) !important;
+}
+
+.cw-3em{
+	width: calc(3em + .375rem + 2px) !important;
+}
+
+.cw-4em{
+	width: calc(4em + .375rem + 2px) !important;
+}
+
+.cw-5em{
+	width: calc(5em + .375rem + 2px) !important;
+}
+
+.cw-6em{
+	width: calc(6em + .375rem + 2px) !important;
+}
+
+.cw-7em{
+	width: calc(7em + .375rem + 2px) !important;
+}
+
+.cw-8em{
+	width: calc(8em + .375rem + 2px) !important;
+}
+
+.cw-9em{
+	width: calc(9em + .375rem + 2px) !important;
+}
+
+.cw-10em{
+	width: calc(10em + .375rem + 2px) !important;
+}
+
+.cw-12em{
+	width: calc(12em + .375rem + 2px) !important;
+}
+
+.cw-16em{
+	width: calc(16em + .375rem + 2px) !important;
+}
+
+.cw-18em{
+	width: calc(18em + .375rem + 2px) !important;
+}
+
+
+
+.cw-20em{
+	width: calc(20em + .375rem + 2px) !important;
+}
+
+.cw-22em{
+	width: calc(22em + .375rem + 2px) !important;
+}
+
+.cw-24em{
+	width: calc(24em + .375rem + 2px) !important;
+}
+
+.cw-26em{
+	width: calc(26em + .375rem + 2px) !important;
+}
+
+.cw-28em{
+	width: calc(28em + .375rem + 2px) !important;
+}
+
+.cw-30em{
+	width: calc(30em + .375rem + 2px) !important;
+}
+
+.cw-40em{
+	width: calc(40em + .375rem + 2px) !important;
+}
+
+.cw-50em{
+	width: calc(50em + .375rem + 2px) !important;
+}
+
+/**
+Margin properties
+*/
+
+.cmt-1{
+	margin-top: -10px;
+}
+
+.cml-1{
+	margin-left: -20px;
+}
+
+.cml-2{
+	margin-left: 10px;
+}
+
+.cml-3{
+	margin-left: 20px;
+}
+
+.cml-4{
+	margin-left: 90px;
+}
+
+.cml-5{
+	margin-left: 60px;
+}
+
+.bDiv6{
+	background-color: silver;
+	height: 380px;
+	text-align: center;
+	border: solid thin;
+}
+
+.input-xs {
+  height: 22px;
+  padding: 2px 5px;
+  font-size: 25px;
+  line-height: 1.5; /* If Placeholder of the input is moved up, rem/modify this. */
+  border-radius: 3px;
+  width: 100px;
+}
