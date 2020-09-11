@@ -1,0 +1,415 @@
+-----------------------------------------------------------------------------------------
+1. Access
+   
+    ssh -i cpdavm cpdavm@cpdavm.eastus.cloudapp.azure.com
+	
+------------------------------------------------------------------------------
+
+MySql installation through Terminal: https://vitux.com/how-to-install-and-configure-mysql-in-ubuntu-18-04-lts/
+
+1. In order to install the latest available version of a software from the Internet repositories, your local repository index needs to be in line with them
+ 
+   sudo apt-get update
+   
+   
+2. Install MySQL Server with apt
+
+   sudo apt-get install mysql-server
+   
+3. Verify installation
+
+   mysql --version
+   
+4. Make security configurations by running the included security script
+
+  
+   sudo mysql_secure_installation
+   
+   Password for root : root / <Choose a password>
+   
+   Logs:
+   
+   
+   cpdavm@cpdavm:~$ sudo mysql_secure_installation
+
+Securing the MySQL server deployment.
+
+Connecting to MySQL using a blank password.
+
+VALIDATE PASSWORD PLUGIN can be used to test passwords
+and improve security. It checks the strength of password
+and allows the users to set only those passwords which are
+secure enough. Would you like to setup VALIDATE PASSWORD plugin?
+
+Press y|Y for Yes, any other key for No: y
+
+There are three levels of password validation policy:
+
+LOW    Length >= 8
+MEDIUM Length >= 8, numeric, mixed case, and special characters
+STRONG Length >= 8, numeric, mixed case, special characters and dictionary                  file
+
+Please enter 0 = LOW, 1 = MEDIUM and 2 = STRONG: 1
+Please set the password for root here.
+
+New password:
+
+Re-enter new password:
+
+Estimated strength of the password: 100
+Do you wish to continue with the password provided?(Press y|Y for Yes, any other key for No) : Y
+By default, a MySQL installation has an anonymous user,
+allowing anyone to log into MySQL without having to have
+a user account created for them. This is intended only for
+testing, and to make the installation go a bit smoother.
+You should remove them before moving into a production
+environment.
+
+Remove anonymous users? (Press y|Y for Yes, any other key for No) : Y
+Success.
+
+
+Normally, root should only be allowed to connect from
+'localhost'. This ensures that someone cannot guess at
+the root password from the network.
+
+Disallow root login remotely? (Press y|Y for Yes, any other key for No) : n
+
+ ... skipping.
+By default, MySQL comes with a database named 'test' that
+anyone can access. This is also intended only for testing,
+and should be removed before moving into a production
+environment.
+
+
+Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y
+ - Dropping test database...
+Success.
+
+ - Removing privileges on test database...
+Success.
+
+Reloading the privilege tables will ensure that all changes
+made so far will take effect immediately.
+
+Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y
+Success.
+
+All done!
+cpdavm@cpdavm:~$
+
+
+5. Configuring Root to use MySQL shell
+
+   While running the security script, you provided a password for root. This user, however, is not allowed to connect to the MySQL shell using the same password. You can change configure root to use the MySQL shell by changing its authentication method from the default “auth_socket” to “mysql_native_password”.
+
+   Here is how you can do it:
+   
+ - 5.1: Start MySQL shell
+ 
+    sudo mysql
+ 
+ 
+ - 5.2: Check authentication method for MySQL users
+ 
+   In the MySQL prompt, enter the following command that lets you check the authentication method/plugin that all your MySQL accounts are currently using:
+   
+   mysql> SELECT user,authentication_string,plugin,host FROM mysql.user;
+   
+ - 5.3: Change the authentication method for root
+ 
+   Our purpose here is that the root user should authenticate with a password on MySQL. To do this, run the following command that lets the root be identified by a mysql_native_password. Please remember that this password has to be very strong.
+   
+   mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '<Choose a password>';
+   
+   
+   From now on your root will not have the password you specified while running the included security script, but this strong password you specified in the above-mentioned command.
+   
+ - 5.4: Reload grant tables
+ 
+   mysql> FLUSH PRIVILEGES;
+ 
+ 
+ - 5.5: Recheck authentication method for MySQL users
+ 
+   Now, when you recheck the authentication method for your MySQL user accounts through the following command, you will see that your root user is now using the mysql_native_password plugin for authentication:
+   
+   mysql> SELECT user,authentication_string,plugin,host FROM mysql.user;
+   
+ - 5.6: the exit
+ 
+ Complete Logs for Step 5
+ 
+ 
+ cpdavm@cpdavm:~$ sudo mysql
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 4
+Server version: 5.7.31-0ubuntu0.18.04.1 (Ubuntu)
+
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> SELECT user,authentication_string,plugin,host FROM mysql.user;
++------------------+-------------------------------------------+-----------------------+-----------+
+| user             | authentication_string                     | plugin                | host      |
++------------------+-------------------------------------------+-----------------------+-----------+
+| root             |                                           | auth_socket           | localhost |
+| mysql.session    | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE | mysql_native_password | localhost |
+| mysql.sys        | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE | mysql_native_password | localhost |
+| debian-sys-maint | *3493AE0AC516021267E055084486D63BC56A6E72 | mysql_native_password | localhost |
++------------------+-------------------------------------------+-----------------------+-----------+
+4 rows in set (0.00 sec)
+
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '<Choose a password>';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT user,authentication_string,plugin,host FROM mysql.user;
++------------------+-------------------------------------------+-----------------------+-----------+
+| user             | authentication_string                     | plugin                | host      |
++------------------+-------------------------------------------+-----------------------+-----------+
+| root             | *1ADC340213B78544003C1EE08FC3B65BA5951B61 | mysql_native_password | localhost |
+| mysql.session    | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE | mysql_native_password | localhost |
+| mysql.sys        | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE | mysql_native_password | localhost |
+| debian-sys-maint | *3493AE0AC516021267E055084486D63BC56A6E72 | mysql_native_password | localhost |
++------------------+-------------------------------------------+-----------------------+-----------+
+4 rows in set (0.00 sec)
+
+mysql> exit
+Bye
+cpdavm@cpdavm:~$
+
+
+6. Test if MySQL is Up and Running
+
+  -6.1: By connecting to MySQL Admin as root and running any administrative command
+  
+  sudo mysqladmin -p -u root version
+  
+  This command is meant to connect to MySQL as root, prompt for root password and then return the version number of MySQL admin.
+  
+  
+  Logs:
+  
+  cpdavm@cpdavm:~$ sudo mysqladmin -p -u root version
+Enter password:
+mysqladmin  Ver 8.42 Distrib 5.7.31, for Linux on x86_64
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Server version          5.7.31-0ubuntu0.18.04.1
+Protocol version        10
+Connection              Localhost via UNIX socket
+UNIX socket             /var/run/mysqld/mysqld.sock
+Uptime:                 2 hours 38 min 49 sec
+
+Threads: 1  Questions: 19  Slow queries: 0  Opens: 120  Flush tables: 1  Open tables: 113  Queries per second avg: 0.001
+cpdavm@cpdavm:~$
+
+
+  -6.2: Check the status of mysql.service
+  
+  After you have installed MySQL on your system, the mysql.service should most probably be automatically running. The output of the following command should verify the active status of the service:
+  
+  
+  $ systemctl status mysql.service
+  
+  
+  start the mysql server by using below cmd
+  
+  $ sudo systemctl start mysql
+  
+  stop the mysql server by using below cmd
+  
+  $ sudo systemctl stop mysql
+  
+  
+7. basic cmds that helps for connection to mysql
+
+   - for mysql service starting : sudo systemctl start mysql
+   
+   - for stopping : sudo systemctl stop mysql
+   
+   - connect as root user: 
+   
+       mysql -u root -p
+	   
+	   -p option for password
+
+
+8. Connection from remote to MySql service running in VM 
+
+   1. In below file modify “bind-address” 127.0.0.1 to 0.0.0.0 - meaning your mysql server is listening on all your VM's ips
+   
+      vim /etc/mysql/mysql.conf.d/mysqld.cnf
+	  
+   2. Add InBoud rule in Virtual Machine allowing 3306 port on the Virtual Machine
+   
+   3. Stop MySql server on the Virtual Machine
+   
+   4. Restart Virtual Machine
+   
+   5. Login to VM and Start again MySql Service
+   
+   6. Sample DB connection info 
+   
+      host: IP address or cpdavm.eastus.cloudapp.azure.com( DNS name )
+	  port: 3306
+	  user: root
+	  password: <Your root password> ( here it is <Choose a password> )
+	  
+	  
+    7. Here MySql root credentials are 
+	
+	    mysql -u root -p
+	
+	   username: root
+	   password: <Choose a password>
+	   
+	8. cmds from MySql terminal
+	
+	   mysql> show databases;
+	  
+	   mysql> use dataentry;
+       Database changed
+	   
+	   run sql file like below
+	   mysql> source /home/cpdavm/cpda/code/automate-dataentry/database/db.sql
+	   
+	   mysql> source /home/cpdavm/cpda/code/automate-dataentry/database/sequence_table.sql
+	   
+	   mysql> source /home/cpdavm/cpda/code/automate-dataentry/database/adminuser.sql	      
+
+
+   
+------------------------------------------------------------------------------------------------
+
+Demo apps
+
+https://github.com/ckat-git-hub/randd.git
+
+/home/cpdavm/cpda/code/test/randd/login-demo-app/target/login-demo-app-0.0.1-SNAPSHOT.war
+
+/opt/cpda/tools/server/apache-tomcat-9.0.14/webapps/login-demo-app.war
+
+http://cpdavm.eastus.cloudapp.azure.com:8080/login-demo-app/antiquedata/login
+
+------------------------------------------------------------------------------------------------
+
+Github Code Location
+https://github.com/ckat-git-hub/automate-dataentry.git
+
+Location informations
+
+code base location: /home/cpdavm/cpda/code
+
+properties file location: /opt/cpda/config
+
+server location: /opt/cpda/tools/server/apache-tomcat-9.0.14/
+
+tesseract location: /opt/cpda/tools/tesseract
+
+form template location: /opt/cpda/template/AGSFormFilling.accdb
+
+files locations:
+
+/opt/cpda/data/images/
+/opt/cpda/data/pdfs/
+/opt/cpda/data/text/
+/opt/cpda/data/assignments/
+
+
+/home/cpdavm/cpda/code/automate-dataentry/src/com/data/export/template
+----------------------------------------------------------------------------------------------
+
+https://github.com/hpcng/singularity/issues/719
+
+Git cmds
+
+force pulling 
+sudo git reset --hard origin/master
+
+
+nano cmd for modification of .sh
+sudo nano deploy.sh
+
+-------------------------------------------------------------------------------------
+
+table doesnot exist issues
+https://dba-presents.com/index.php/jvm/java/221-mysqlsyntaxerrorexception-table-db-settings-doesn-t-exist
+
+
+spring security tag not working in jsp
+https://stackoverflow.com/questions/24885621/spring-security-secauthorize-tag-is-not-working
+
+
+--------------------------------------------------------------------------------
+Product Access URL:
+http://cpdavm.eastus.cloudapp.azure.com:8080/automate-dataentry/antiquedata/login
+
+
+
+-----------------------------------------------------------------------------------
+
+Azure FAQ Help
+https://azure.microsoft.com/en-us/free/free-account-faq/
+
+---------------------------------------------------------------------------------------
+
+Run these cmds for capturing tomcat startup logs in console
+tomcat/bin/startup.sh
+tail -f catalina.out
+
+
+-----------------------------------------------------------------------------------------
+
+1. change permission first for existing project using below cmd
+    
+   sudo chmod 777 -R automate-dataentry
+	  
+2. checkout code by using below cmd 
+
+   sudo git clone https://github.com/ckat-git-hub/automate-dataentry.git
+
+3. then change permission of checked out folder
+
+   sudo chmod 777 -R automate-dataentry
+   
+4. then build by using below cmd
+   
+    mvn clean install
+   
+--------------------------------------------------------------------------------------------
+
+Maven installation 
+
+sudo apt update
+
+sudo apt install maven
+
+mvn -version
+
+refer this : https://www.journaldev.com/33588/install-maven-linux-ubuntu
+
+-----------------------------------------------------------------------
+
+Change permission for all
+
+sudo chmod 777 -R automate-dataentry
+
+sudo rm -R automate-dataentry
+
+sudo rm -R m2e-wtp
+
+sudo rmdir target
+
